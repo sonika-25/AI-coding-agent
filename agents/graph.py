@@ -23,6 +23,7 @@ BASE_WORKSPACES = pathlib.Path.cwd() / "workspaces"
 BASE_WORKSPACES.mkdir(parents=True, exist_ok=True)
 
 origins = [
+    "http://localhost:3000",
     "https://ai-coding-agent-1-2cac.onrender.com/"
 ]
 
