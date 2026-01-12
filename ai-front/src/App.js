@@ -1,16 +1,16 @@
 import "./App.css";
 import React, { useState } from "react";
-
 function App() {
   const [prompt, setPrompt] = useState("");
   const [description, setDescription] = useState("");
   const [colorScheme, setColorScheme] = useState("");
   const [stack, setStack] = useState("");
   const [loading, setLoading] = useState(false);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   async function downloadZip() {
+    //set loading and download ZIP
     setLoading(true);
-
     try {
       const user_prompt = JSON.stringify({
         prompt,
@@ -19,7 +19,8 @@ function App() {
         stack,
       });
 
-      const res = await fetch("http://localhost:8000/ask", {
+      //API call
+      const res = await fetch(`${API_URL}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_prompt }),
@@ -36,6 +37,7 @@ function App() {
       const match = disposition.match(/filename="?([^"]+)"?/);
       const filename = match?.[1] || "generated_project.zip";
 
+      //return ZIP for downlaod and remove loading
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

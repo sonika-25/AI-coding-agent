@@ -4,16 +4,24 @@
   font-family: sans-serif;
   text-align: left;
 }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:  rgb(30,30,30)
+}
 
 h1 {
   margin-bottom: 4px;
+  color:#ffffff
 }
 
 .subtitle {
-  color: #666;
+  color: #ffffff;
   margin-bottom: 24px;
 }
-
+.form {
+  color:#ffffff
+}
 .form label {
   display: flex;
   flex-direction: column;
@@ -26,6 +34,7 @@ h1 {
   margin-top: 4px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  color:#ffffff
 }
 
 button {
@@ -33,10 +42,11 @@ button {
   padding: 10px;
   border-radius: 6px;
   border: none;
-  background: #4f46e5;
+  background: #ffffff;
   color: white;
   font-weight: 600;
   cursor: pointer;
+  color: rgb(30,30,30)
 }
 
 button:disabled {
