@@ -3,16 +3,37 @@ from langchain_groq.chat_models import ChatGroq
 from langgraph.constants import END
 from langgraph.graph import StateGraph
 from langgraph.prebuilt import create_react_agent
+import shutil
+import pathlib
+import uuid
+from fastapi import FastAPI, BackgroundTasks
+from fastapi.responses import FileResponse
+import os
+import uvicorn
 
 from agents.prompts import *
 from agents.states import *
-from agents.tools import write_file, read_file, get_current_directory, list_files
+from agents.tools import write_file, read_file, get_current_directory, list_files, set_project_root
 
 load_dotenv()
+from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI()
+BASE_WORKSPACES = pathlib.Path.cwd() / "workspaces"
+BASE_WORKSPACES.mkdir(parents=True, exist_ok=True)
 
+origins = [
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 llm = ChatGroq(model="openai/gpt-oss-120b")
-
 
 def planner_agent(state: dict) -> dict:
     """Converts user prompt into a structured Plan."""
@@ -70,9 +91,7 @@ def coder_agent(state: dict) -> dict:
     return {"coder_state": coder_state}
 
 
-
-
-
+#Graph construction
 graph = StateGraph(dict)
 graph.add_node("planner", planner_agent)
 graph.add_node("architect", architect_agent)
@@ -88,8 +107,52 @@ graph.add_conditional_edges(
 graph.set_entry_point("planner")
 
 agent=graph.compile()
+PROJECT_ROOT = pathlib.Path.cwd() / "generated_project"
 
-if __name__ == "__main__":
-    result = agent.invoke({"user_prompt": "Build a colourful modern todo app in html css and js"},
-                          {"recursion_limit": 100})
+def zip_generated_project(zip_name: str = "generated_project") -> pathlib.Path:
+    """  Zips the entire generated_project folder and returns the path to the zip file."""
+    if not PROJECT_ROOT.exists():
+        raise FileNotFoundError("generated_project does not exist")
+
+    # make_archive wants the path WITHOUT ".zip"
+    zip_base_path = PROJECT_ROOT.parent / zip_name
+
+    zip_path = shutil.make_archive(
+        base_name=str(zip_base_path),
+        format="zip",
+        root_dir=str(PROJECT_ROOT),
+    )
+
+    return pathlib.Path(zip_path)
+
+@app.get("/ping")
+async def ping():
+    return "HELLO!"
+
+@app.post("/ask")
+async def prompter(user_prompt: UserPrompt, background_tasks: BackgroundTasks):
+    workspace_id = str(uuid.uuid4())
+    workspace_root = BASE_WORKSPACES / workspace_id
+    project_root = workspace_root / "generated_project"
+    project_root.mkdir(parents=True, exist_ok=True)
+    set_project_root(str(project_root))
+
+    result = agent.invoke({"user_prompt": user_prompt},
+                         {"recursion_limit": 100})
     print("Final State:", result)
+    zip_base = workspace_root / "generated_project"  # no .zip
+    zip_path = shutil.make_archive(str(zip_base), "zip", root_dir=str(project_root))
+    background_tasks.add_task(shutil.rmtree, workspace_root, True)
+
+    print("ZIP CREATED AT:", zip_path)
+    return FileResponse(
+        path=str(zip_path),
+        media_type="application/zip",
+        filename="generated_project.zip",
+    )
+if __name__ == "__main__":
+    uvicorn.run(app, host='localhost', port = 8000)
+
+    #result = agent.invoke({"user_prompt": "Build a colourful modern todo app in html css and js"},
+     #                     {"recursion_limit": 100})
+    #print("Final State:", result)

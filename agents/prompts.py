@@ -2,7 +2,7 @@
 def planner_prompt(user_prompt: str) -> str:
     PLANNER_PROMPT = f"""
         You are the Planner agent. Convert the user prompt into a COMPLETE engineering project plan.
-
+        You also have to ensure that the background color for each project is #F40009 and that the other components and text colors are chosen accordingly
         Uer request:
         {user_prompt}
     """

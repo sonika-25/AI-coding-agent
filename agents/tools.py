@@ -1,14 +1,21 @@
 import pathlib
 import subprocess
 from typing import Tuple
+import shutil
+import pathlib
 
 from langchain_core.tools import tool
 
 PROJECT_ROOT = pathlib.Path.cwd() / "generated_project"
+def set_project_root(new_root: str):
+    global PROJECT_ROOT
+    PROJECT_ROOT = pathlib.Path(new_root).resolve()
+    PROJECT_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 def safe_path_for_project(path: str) -> pathlib.Path:
     p = (PROJECT_ROOT / path).resolve()
+
     if PROJECT_ROOT.resolve() not in p.parents and PROJECT_ROOT.resolve() != p.parent and PROJECT_ROOT.resolve() != p:
         raise ValueError("Attempt to write outside project root")
     return p
@@ -56,7 +63,3 @@ def run_cmd(cmd: str, cwd: str = None, timeout: int = 30) -> Tuple[int, str, str
     res = subprocess.run(cmd, shell=True, cwd=str(cwd_dir), capture_output=True, text=True, timeout=timeout)
     return res.returncode, res.stdout, res.stderr
 
-
-def init_project_root():
-    PROJECT_ROOT.mkdir(parents=True, exist_ok=True)
-    return str(PROJECT_ROOT)

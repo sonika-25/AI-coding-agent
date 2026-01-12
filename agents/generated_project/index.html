@@ -3,52 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colorful Todo App</title>
+    <title>RedTodo</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header with title and accent color picker -->
-    <header id="app-header">
-        <h1>Colorful Todo App</h1>
-        <label for="accent-color-picker" class="visually-hidden">Accent Color</label>
-        <input type="color" id="accent-color-picker" aria-label="Accent color picker">
-    </header>
-
-    <!-- Form for adding new todos -->
-    <section id="todo-input">
-        <form id="todo-form" aria-label="Add new todo">
-            <input type="text" id="todo-title" placeholder="What needs to be done?" required>
-            <textarea id="todo-description" placeholder="Add details (optional)"></textarea>
+    <div id="app" class="todo-app">
+        <header class="todo-header">
+            <h1>RedTodo</h1>
+        </header>
+        <form id="todo-form" class="todo-form">
+            <input type="text" id="new-todo" placeholder="What needs to be done?" autocomplete="off" required>
             <button type="submit">Add</button>
         </form>
-    </section>
-
-    <!-- Filter buttons -->
-    <div id="filters">
-        <button id="filter-all">All</button>
-        <button id="filter-active">Active</button>
-        <button id="filter-completed">Completed</button>
+        <ul id="todo-list" class="todo-list"></ul>
+        <footer>
+            <button id="clear-completed" class="clear-completed">Clear Completed</button>
+        </footer>
     </div>
-
-    <!-- List that will hold todo items -->
-    <ul id="todo-list" role="list" aria-live="polite"></ul>
-
-    <!-- Template for a single todo item -->
-    <template id="todo-item-template">
-        <li class="todo-item">
-            <input type="checkbox" class="todo-checkbox" aria-label="Mark as completed">
-            <span class="todo-title"></span>
-            <p class="todo-description"></p>
-            <button type="button" class="edit-btn" aria-label="Edit todo">✎</button>
-            <button type="button" class="delete-btn" aria-label="Delete todo">🗑</button>
-        </li>
-    </template>
-
-    <!-- Footer -->
-    <footer id="app-footer">
-        <p>© 2024 Colorful Todo App. Created by Your Name.</p>
-    </footer>
-
-    <script src="script.js" defer></script>
+    <script src="app.js"></script>
 </body>
 </html>
