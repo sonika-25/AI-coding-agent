@@ -20,7 +20,7 @@ function App() {
       });
 
       //API call
-      const res = await fetch(`${API_URL}/ask`, {
+      const res = await fetch(`https://ai-coding-agent-9hy2.onrender.com/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_prompt }),
