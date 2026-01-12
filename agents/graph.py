@@ -24,15 +24,17 @@ BASE_WORKSPACES.mkdir(parents=True, exist_ok=True)
 
 origins = [
     "http://localhost:3000",
-    "https://ai-coding-agent-1-2cac.onrender.com/"
+    "https://ai-coding-agent-1-2cac.onrender.com"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["POST", "GET", "OPTIONS"]
     allow_headers=["*"]
+    expose_headers = ["Content-Disposition"],
+
 )
 llm = ChatGroq(model="openai/gpt-oss-120b")
 
